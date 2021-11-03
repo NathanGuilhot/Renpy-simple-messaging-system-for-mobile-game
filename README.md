@@ -29,7 +29,7 @@ screen nvl(dialogue, items=None):      #### ADD THIS TO MAKE THE PHONE WORK!! :)
 (in this project I only increased the size of some text to make it testable)
 
 [Browser demo on itch](https://nighten.itch.io/renpy-simple-messaging-system-for-mobile-game)
-[Original post on Lemmasoft]()
+[Original post on Lemmasoft](https://lemmasoft.renai.us/forums/viewtopic.php?f=51&t=63458#p547793)
 [Mirror download on my website](https://nighten.fr/files/phone_messenger_fullscreen/)
 
 If you have any issue or question, please let me know! I hope this will help you!!
