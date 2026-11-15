@@ -2,6 +2,7 @@
 
 define nvl_mode = "phone"  ##Allow the NVL mode to become a phone conversation
 define MC_Name = "Nighten" ##The name of the main character, used to place them on the screen
+define phone_width = config.screen_width ##Width of the phone, centered on screen (e.g. 600 for a landscape game)
 
 init -1 python:
 
@@ -15,17 +16,19 @@ init -1 python:
 
 screen PhoneDialogue(dialogue, items=None):
 
+    $ items = items or []
+    # Bottom bar height: 288 at 1920 (15% of the screen height)
+    $ phone_bar_height = int(config.screen_height * 0.15)
+
     style_prefix "phoneFrame"
 
-    vbox:
+    # The bottom bar takes what it needs, the messages take the rest
+    side "c b":
+        xsize phone_width
+        xalign 0.5
         spacing 0
         # Messenger screen
         frame:
-            # ysize 0.85
-            if len(items)>=2:
-                ysize 1632-(len(items)-2)*(120+10)-20
-            else:
-                ymaximum 1632
             viewport:
                 draggable True
                 mousewheel True
@@ -41,14 +44,17 @@ screen PhoneDialogue(dialogue, items=None):
         if len(items)==0: #If we don't have a menu
             button:
                 padding (0,0)
+                ysize phone_bar_height
                 add Solid("#ffda4a")
-                add Transform("continue_btn.png", align=(0.5,0.5))
+                add Transform("continue_btn.png", align=(0.5,0.5), zoom=min(1.0, phone_bar_height * 0.7 / 194))
                 action RollForward()
         else:
             # Phone Menu Choice
             frame:
                 background Solid("#ffda4a")
                 foreground None
+                yfill False
+                ypadding 24
 
                 vbox:
                     yalign 0.5
@@ -59,7 +65,7 @@ screen PhoneDialogue(dialogue, items=None):
                             frame:
                                 background Solid("#f1f6fe")
                                 foreground None
-                                xysize (1000,120)
+                                xysize (phone_width-80,120)
 
                                 text i.caption:
                                     align (0.5,0.5)
@@ -155,8 +161,8 @@ screen nvl_phonetext(dialogue,items):
 style phoneFrame is default
 
 style phoneFrame_frame:
-    background "phone_background.png"
-    foreground "phone_foreground.png"
+    background Transform("phone_background.png", fit="cover")
+    foreground Frame("phone_foreground.png", 120, 120)
     
     yfill True
     xfill True
