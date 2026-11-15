@@ -87,9 +87,9 @@ init python:
 Call `$ phone_open("Eileen")` before that conversation; call it again after any `nvl clear`.
 
 **Can I use it in a landscape / PC game?**
-Yes. Cap the phone's width and it is centred:
+Yes. Cap the phone's width and it is centred (keep it ≥ 700, bubbles have a fixed width):
 ```renpy
-define phone_width = 600
+define phone_width = 800
 ```
 
 **Which files do I copy?**
