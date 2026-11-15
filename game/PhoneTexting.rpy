@@ -3,6 +3,7 @@
 define nvl_mode = "phone"  ##Allow the NVL mode to become a phone conversation
 default MC_Name = "Nighten" ##The name of the main character (or a list of names), used to place them on the screen. Can be "[player_name]"
 define phone_icons = {} ##Optional icon per character, e.g. {"Sarah": "sarah_icon.png"}
+define phone_width = config.screen_width ##Width of the phone, centered on screen (e.g. 800 for a landscape game, not below 700)
 
 init -1 python:
 
@@ -23,17 +24,18 @@ init -1 python:
 
 screen PhoneDialogue(dialogue, items=None):
 
+    ## Height of the yellow bar at the bottom (288 on a 1080x1920 game)
+    $ phone_bar_height = int(config.screen_height * 0.15)
+
     style_prefix "phoneFrame"
 
-    vbox:
+    ## The bar goes at the bottom (b), the messages fill the space left above it (c)
+    side "c b":
+        xsize phone_width
+        xalign 0.5
         spacing 0
         # Messenger screen
         frame:
-            # ysize 0.85
-            if len(items)>=2:
-                ysize 1632-(len(items)-2)*(120+10)-20
-            else:
-                ymaximum 1632
             viewport:
                 draggable True
                 mousewheel True
@@ -49,14 +51,19 @@ screen PhoneDialogue(dialogue, items=None):
         if len(items)==0: #If we don't have a menu
             button:
                 padding (0,0)
+                ysize phone_bar_height
                 add Solid("#ffda4a")
-                add Transform("continue_btn.png", align=(0.5,0.5))
+                add "continue_btn.png":
+                    align (0.5,0.5)
+                    zoom min(1.0, phone_bar_height * 0.7 / 194) ## The image is 194px tall, shrink it on small screens
                 action RollForward()
         else:
             # Phone Menu Choice
             frame:
                 background Solid("#ffda4a")
                 foreground None
+                yfill False ## Only as tall as the choices
+                ypadding 24
 
                 vbox:
                     yalign 0.5
@@ -67,7 +74,7 @@ screen PhoneDialogue(dialogue, items=None):
                             frame:
                                 background Solid("#f1f6fe")
                                 foreground None
-                                xysize (1000,120)
+                                xysize (phone_width-80,120)
 
                                 text i.caption:
                                     align (0.5,0.5)
@@ -165,8 +172,8 @@ style phoneFrame is default
 style phone_mc is nvl_label ##Give a character who_style="phone_mc" to put them on the main character side
 
 style phoneFrame_frame:
-    background "phone_background.png"
-    foreground "phone_foreground.png"
+    background Transform("phone_background.png", fit="cover")
+    foreground Frame("phone_foreground.png", 120, 120)
     
     yfill True
     xfill True
