@@ -16,13 +16,12 @@ init -1 python:
 
 screen PhoneDialogue(dialogue, items=None):
 
-    $ items = items or []
-    # Bottom bar height: 288 at 1920 (15% of the screen height)
+    ## Height of the yellow bar at the bottom (288 on a 1080x1920 game)
     $ phone_bar_height = int(config.screen_height * 0.15)
 
     style_prefix "phoneFrame"
 
-    # The bottom bar takes what it needs, the messages take the rest
+    ## The bar goes at the bottom (b), the messages fill the space left above it (c)
     side "c b":
         xsize phone_width
         xalign 0.5
@@ -46,14 +45,16 @@ screen PhoneDialogue(dialogue, items=None):
                 padding (0,0)
                 ysize phone_bar_height
                 add Solid("#ffda4a")
-                add Transform("continue_btn.png", align=(0.5,0.5), zoom=min(1.0, phone_bar_height * 0.7 / 194))
+                add "continue_btn.png":
+                    align (0.5,0.5)
+                    zoom min(1.0, phone_bar_height * 0.7 / 194) ## The image is 194px tall, shrink it on small screens
                 action RollForward()
         else:
             # Phone Menu Choice
             frame:
                 background Solid("#ffda4a")
                 foreground None
-                yfill False
+                yfill False ## Only as tall as the choices
                 ypadding 24
 
                 vbox:
