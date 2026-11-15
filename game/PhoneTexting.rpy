@@ -1,18 +1,17 @@
 # Here's the code for the phone!
 
 define nvl_mode = "phone"  ##Allow the NVL mode to become a phone conversation
-default MC_Name = "Nighten" ##The name of the main character (or a list of names), used to place them on the screen
-define phone_icons = {} ##Optional per-character icons: {"Displayed name": "image.png"}
+default MC_Name = "Nighten" ##The name of the main character (or a list of names), used to place them on the screen. Can be "[player_name]"
+define phone_icons = {} ##Optional icon per character, e.g. {"Sarah": "sarah_icon.png"}
 
 init -1 python:
-    # True if the message d is sent by the main character: name matches MC_Name
-    # (after substitution, so "[player_name]" works), or the Character uses who_style="phone_mc"
+
+    # Is this message from the main character?
     def phone_is_mc(d):
-        if (d.who_args or {}).get("style") == "phone_mc":
+        if d.who_args.get("style") == "phone_mc":
             return True
         names = MC_Name if isinstance(MC_Name, (list, tuple)) else [MC_Name]
-        return d.who in [renpy.substitute(n) for n in names]
-
+        return d.who in [renpy.substitute(name) for name in names]
 
     # Character callback ; Play a sound when a message is received
     def Phone_ReceiveSound(event, interact=True, **kwargs):
@@ -163,7 +162,7 @@ screen nvl_phonetext(dialogue,items):
         $ previous_d_who = d.who
                     
 style phoneFrame is default
-style phone_mc is nvl_label ##Use who_style="phone_mc" on a Character to show it as the main character
+style phone_mc is nvl_label ##Give a character who_style="phone_mc" to put them on the main character side
 
 style phoneFrame_frame:
     background "phone_background.png"
