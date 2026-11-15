@@ -92,12 +92,8 @@ screen nvl_phonetext(dialogue,items):
         if d.who == None: # If it's the narrator talking
             null height 30
             text d.what:
-                    xalign 0.5
-                    ypos 0.0
-                    xsize 650
-                    text_align 0.5
-                    italic True
-                    size 40
+                    style "phone_narrator_text"
+                    prefer_screen_to_id True ## Use the phone style, not the character's own text style
                     slow_cps False
                     id d.what_id
                     if d.current and len(items)==0:
@@ -106,9 +102,11 @@ screen nvl_phonetext(dialogue,items):
         else:
             $ is_mc = phone_is_mc(d)
             if is_mc:
-                $ message_frame = "phone_send_frame.png"
+                $ bubble_style = "phone_mc_bubble"
+                $ text_style = "phone_mc_text"
             else:
-                $ message_frame = "phone_received_frame.png"
+                $ bubble_style = "phone_other_bubble"
+                $ text_style = "phone_other_text"
 
             hbox:
                 spacing 10
@@ -133,15 +131,10 @@ screen nvl_phonetext(dialogue,items):
                 vbox:
                     yalign 1.0
                     if not is_mc and previous_d_who != d.who:
-                        text d.who:
-                            size 30
+                        text d.who style "phone_name_text"
 
                     frame:
-                        padding (20,20)
-                        
-
-                        background Frame(message_frame, 23,23,23,23)
-                        # xsize 750
+                        style bubble_style
 
                         if d.current and len(items)==0:
                             if is_mc:
@@ -150,24 +143,50 @@ screen nvl_phonetext(dialogue,items):
                                 at message_appear(-1)
 
                         text d.what:
-                            pos (0,0)
-                            # xsize 750
+                            style text_style
+                            prefer_screen_to_id True
                             slow_cps False
-                            size 45
-                            
-
-                            if is_mc:
-                                color "#FFF"
-                                text_align 1.0
-                                xanchor 1.0
-                                xpos 1.0
-                            else:
-                                color "#000"
-
-                                
                             id d.what_id
         $ previous_d_who = d.who
                     
+## Phone text and bubble styles, change them to restyle the phone.
+## Font, color and outlines are set here so your game's own text style doesn't leak into the phone.
+style phone_text is default:
+    font "DejaVuSans.ttf"
+    color "#404040"
+    outlines []
+
+style phone_narrator_text is phone_text:
+    size 40
+    italic True
+    text_align 0.5
+    xalign 0.5
+    xmaximum 650
+
+style phone_name_text is phone_text:
+    size 30
+
+style phone_mc_text is phone_text:
+    size 45
+    color "#fff"
+    text_align 1.0
+    xalign 1.0
+
+style phone_other_text is phone_text:
+    size 45
+    color "#000"
+    text_align 0.0
+
+style phone_bubble is default:
+    padding (20, 20)
+    xsize 538
+
+style phone_mc_bubble is phone_bubble:
+    background Frame("phone_send_frame.png", 23, 23, 23, 23)
+
+style phone_other_bubble is phone_bubble:
+    background Frame("phone_received_frame.png", 23, 23, 23, 23)
+
 style phoneFrame is default
 style phone_mc is nvl_label ##Give a character who_style="phone_mc" to put them on the main character side
 
