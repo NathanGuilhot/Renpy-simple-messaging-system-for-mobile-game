@@ -1,9 +1,17 @@
 # Here's the code for the phone!
 
 define nvl_mode = "phone"  ##Allow the NVL mode to become a phone conversation
-define MC_Name = "Nighten" ##The name of the main character, used to place them on the screen
+default MC_Name = "Nighten" ##The name of the main character (or a list of names), used to place them on the screen. Can be "[player_name]"
+define phone_icons = {} ##Optional icon per character, e.g. {"Sarah": "sarah_icon.png"}
 
 init -1 python:
+
+    # Is this message from the main character?
+    def phone_is_mc(d):
+        if d.who_args.get("style") == "phone_mc":
+            return True
+        names = MC_Name if isinstance(MC_Name, (list, tuple)) else [MC_Name]
+        return d.who in [renpy.substitute(name) for name in names]
 
     # Character callback ; Play a sound when a message is received
     def Phone_ReceiveSound(event, interact=True, **kwargs):
@@ -89,23 +97,24 @@ screen nvl_phonetext(dialogue,items):
                         at message_narrator
             null height 30
         else:
-            if d.who == MC_Name:
+            $ is_mc = phone_is_mc(d)
+            if is_mc:
                 $ message_frame = "phone_send_frame.png"
             else:
                 $ message_frame = "phone_received_frame.png"
 
             hbox:
                 spacing 10
-                if d.who == MC_Name:
+                if is_mc:
                     box_reverse True
                     xalign 1.0
                 
                 #If this is the first message of the character, show an icon
                 if previous_d_who != d.who:
-                    if d.who == MC_Name:
-                        $ message_icon = "phone_send_icon.png"
+                    if is_mc:
+                        $ message_icon = phone_icons.get(d.who, "phone_send_icon.png")
                     else:
-                        $ message_icon = "phone_received_icon.png"
+                        $ message_icon = phone_icons.get(d.who, "phone_received_icon.png")
 
                     add message_icon:
                         if d.current  and len(items)==0:
@@ -116,7 +125,7 @@ screen nvl_phonetext(dialogue,items):
 
                 vbox:
                     yalign 1.0
-                    if d.who != MC_Name and previous_d_who != d.who:
+                    if not is_mc and previous_d_who != d.who:
                         text d.who:
                             size 30
 
@@ -128,7 +137,7 @@ screen nvl_phonetext(dialogue,items):
                         # xsize 750
 
                         if d.current and len(items)==0:
-                            if d.who == MC_Name:
+                            if is_mc:
                                 at message_appear(1)
                             else:
                                 at message_appear(-1)
@@ -140,7 +149,7 @@ screen nvl_phonetext(dialogue,items):
                             size 45
                             
 
-                            if d.who == MC_Name :
+                            if is_mc:
                                 color "#FFF"
                                 text_align 1.0
                                 xanchor 1.0
@@ -153,6 +162,7 @@ screen nvl_phonetext(dialogue,items):
         $ previous_d_who = d.who
                     
 style phoneFrame is default
+style phone_mc is nvl_label ##Give a character who_style="phone_mc" to put them on the main character side
 
 style phoneFrame_frame:
     background "phone_background.png"
