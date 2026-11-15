@@ -2,7 +2,7 @@
 
 define nvl_mode = "phone"  ##Allow the NVL mode to become a phone conversation
 define MC_Name = "Nighten" ##The name of the main character, used to place them on the screen
-define phone_width = config.screen_width ##Width of the phone, centered on screen (e.g. 600 for a landscape game)
+define phone_width = config.screen_width ##Width of the phone, centered on screen (e.g. 800 for a landscape game, not below 700)
 
 init -1 python:
 
